@@ -28,7 +28,7 @@ public class BoletoController {
 	
 	@GetMapping(value = "/rest/bankslips/", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	@ResponseStatus(code = HttpStatus.OK)
-	public BoletoResponseList getTemplate() {
+	public BoletoResponseList listarBoletos() {
 						
 		List<Boleto> listaBoletos = boletoDAO.findAll();		
 		
