@@ -1,20 +1,20 @@
 package br.com.contaazul.boleto.service;
 
-import java.util.Collection;
-
 import br.com.contaazul.boleto.controller.request.BoletoRequest;
+import br.com.contaazul.boleto.controller.response.BoletoDetalheResponse;
 import br.com.contaazul.boleto.controller.response.BoletoResponse;
+import br.com.contaazul.boleto.controller.response.BoletoResponseList;
 
 public interface BoletoService {
 
 	BoletoResponse criaBoleto(BoletoRequest boletoRequest);
 	
-	Collection<BoletoResponse> listaBoletos();
+	BoletoResponseList listaBoletos();
 	
-	BoletoResponse veDetalhesBoleto(BoletoRequest boletoRequest);
+	BoletoDetalheResponse veDetalhesBoleto(String boletoId);
 	
-	BoletoResponse pagaBoleto(BoletoRequest boletoRequest);
+	BoletoResponse pagaBoleto(String boletoId);
 	
-	BoletoResponse cancelaBoleto(BoletoRequest boletoRequest);
+	BoletoResponse cancelaBoleto(String boletoId);
 	
 }

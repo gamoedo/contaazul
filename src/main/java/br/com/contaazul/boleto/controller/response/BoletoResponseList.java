@@ -6,7 +6,7 @@ import br.com.contaazul.boleto.entity.Boleto;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
-public class BoletoResponseList  extends ArrayList<BoletoResponse> {
+public class BoletoResponseList extends ArrayList<BoletoResponse> {
 	
 	private static final long serialVersionUID = 1L;
 

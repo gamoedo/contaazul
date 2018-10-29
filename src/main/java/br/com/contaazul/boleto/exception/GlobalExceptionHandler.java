@@ -5,6 +5,7 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javassist.NotFoundException;
 import lombok.Getter;
 
 @RestControllerAdvice
@@ -16,13 +17,13 @@ public class GlobalExceptionHandler {
 	}
 
 	@ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-	public ErrorMessage handleUnprocessableEntity(HttpMessageNotReadableException e) {
+	public ErrorMessage handleUnprocessableEntity(UnprocessableEntityException e) {
 		return new ErrorMessage("422: ",
 				"Invalid bankslip provided. The possible reasons are: A field of the provided bankslip was null or with invalid values");
 	}
 
 	@ResponseStatus(HttpStatus.NOT_FOUND)
-	public ErrorMessage handleNotFound(HttpMessageNotReadableException e) {
+	public ErrorMessage handleNotFound(NotFoundException e) {
 		return new ErrorMessage("404: ", "Bankslip not found with the specified id");
 	}
 
