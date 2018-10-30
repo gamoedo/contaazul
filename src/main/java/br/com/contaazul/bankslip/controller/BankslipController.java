@@ -2,6 +2,8 @@ package br.com.contaazul.bankslip.controller;
 
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,6 +27,8 @@ import javassist.NotFoundException;
 @RestController
 public class BankslipController {
 
+	Logger logger = LoggerFactory.getLogger(this.getClass());
+	
 	@Autowired
 	BankslipService bankslipService;
 
@@ -32,11 +36,13 @@ public class BankslipController {
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public BankslipResponse createBankslip(@RequestBody @Valid BankslipRequest bankslipRequest)
 			throws UnprocessableEntityException {
+		logger.info("createBankslip: Receiving bankslipRequest");
 		return bankslipService.createBankslip(bankslipRequest);
 	}
 
 	@GetMapping(value = "/rest/bankslips/", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public BankslipResponseList listBankslips() {
+		logger.info("listBankslips: Producing listBankslips");
 		return bankslipService.listBankslips();
 	}
 
@@ -44,6 +50,7 @@ public class BankslipController {
 	@ResponseStatus(code = HttpStatus.OK)
 	public BankslipDetailResponse detailsBankslip(@RequestBody @PathVariable(name = "id") String bankslipId)
 			throws NotFoundException {
+		logger.info("detailsBankslip: Receiving bankslipId");
 		return bankslipService.detailsBankslip(bankslipId);
 	}
 
@@ -52,6 +59,7 @@ public class BankslipController {
 	public void payBankslip(@RequestBody @Valid BankslipPaymentRequest bankslipPaymentRequest,
 			@PathVariable(name = "id") String bankslipId)
 					throws NotFoundException {
+		logger.info("payBankslip: Receiving bankslipPaymentRequest and bankslipId");
 		bankslipService.payBankslip(bankslipId, bankslipPaymentRequest);
 	}
 
@@ -59,6 +67,7 @@ public class BankslipController {
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	public void cancelBankslip(@RequestBody @PathVariable(name = "id") String bankslipId)
 			throws NotFoundException {
+		logger.info("cancelBankslip: Receiving bankslipId");
 		bankslipService.cancelBankslip(bankslipId);
 	}
 
