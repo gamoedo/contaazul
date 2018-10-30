@@ -12,9 +12,10 @@ import br.com.contaazul.boleto.controller.request.BoletoRequest;
 import br.com.contaazul.boleto.controller.response.BoletoDetalheResponse;
 import br.com.contaazul.boleto.controller.response.BoletoResponse;
 import br.com.contaazul.boleto.controller.response.BoletoResponseList;
-import br.com.contaazul.boleto.dao.BoletoDAO;
 import br.com.contaazul.boleto.entity.Boleto;
 import br.com.contaazul.boleto.entity.EnumStatus;
+import br.com.contaazul.boleto.exception.UnprocessableEntityException;
+import br.com.contaazul.boleto.repository.BoletoRepository;
 import br.com.contaazul.boleto.service.BoletoService;
 
 @Service
@@ -24,14 +25,19 @@ public class BoletoServiceImpl implements BoletoService{
 	private final BigDecimal MULTA_MAIS_DEZ_DIAS = BigDecimal.valueOf(0,01);
 	
 	@Autowired
-	BoletoDAO boletoDAO;
+	BoletoRepository boletoDAO;
 
 	@Override
-	public BoletoResponse criaBoleto(BoletoRequest boletoRequest) {
+	public BoletoResponse criaBoleto(BoletoRequest boletoRequest) throws UnprocessableEntityException {
 
 		Boleto boleto = new Boleto();		
 		
-		boleto = boletoRequest.toModel();
+		try {		
+			boleto = boletoRequest.toModel();			
+		}catch(Exception e) {
+			throw new UnprocessableEntityException();
+		}
+		
 		boleto.setStatus(EnumStatus.PENDING);
 				
 		boletoDAO.save(boleto);

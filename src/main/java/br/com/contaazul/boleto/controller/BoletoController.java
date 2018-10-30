@@ -16,8 +16,7 @@ import br.com.contaazul.boleto.controller.request.BoletoRequest;
 import br.com.contaazul.boleto.controller.response.BoletoDetalheResponse;
 import br.com.contaazul.boleto.controller.response.BoletoResponse;
 import br.com.contaazul.boleto.controller.response.BoletoResponseList;
-import br.com.contaazul.boleto.entity.Boleto;
-import br.com.contaazul.boleto.entity.EnumStatus;
+import br.com.contaazul.boleto.exception.UnprocessableEntityException;
 import br.com.contaazul.boleto.service.BoletoService;
 
 @RestController
@@ -31,7 +30,7 @@ public class BoletoController {
 
 	@PostMapping(value = "/rest/bankslips/", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	@ResponseStatus(code = HttpStatus.CREATED)
-	public BoletoResponse criarBoleto(@RequestBody @Valid BoletoRequest boletoRequest) {		
+	public BoletoResponse criarBoleto(@RequestBody @Valid BoletoRequest boletoRequest) throws UnprocessableEntityException {		
 		
 		return boletoService.criaBoleto(boletoRequest);		
 	}
