@@ -1,4 +1,4 @@
-package br.com.contaazul.boleto.entity;
+package br.com.contaazul.bankslip.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,5 +11,5 @@ public enum EnumStatus {
 	PAID(1), 
 	CANCELED(2);
 	
-	public final Integer codigo;
+	public final Integer code;
 }

@@ -1,4 +1,4 @@
-package br.com.contaazul.boleto.exception;
+package br.com.contaazul.bankslip.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;

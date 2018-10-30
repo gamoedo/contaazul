@@ -1,4 +1,4 @@
-package br.com.contaazul.boleto.entity;
+package br.com.contaazul.bankslip.entity;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -15,7 +15,7 @@ import lombok.Data;
 
 @Data
 @Entity
-public class Boleto {
+public class Bankslip {
 
 	@Id 
 	@GeneratedValue(generator = "uuid")

@@ -1,4 +1,4 @@
-package br.com.contaazul.boleto.config;
+package br.com.contaazul.bankslip.config;
 
 import java.util.Collections;
 
@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import br.com.contaazul.boleto.BoletoApplication;
+import br.com.contaazul.bankslip.BoletoApplication;
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;

@@ -1,4 +1,4 @@
-package br.com.contaazul.boleto.exception;
+package br.com.contaazul.bankslip.exception;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
