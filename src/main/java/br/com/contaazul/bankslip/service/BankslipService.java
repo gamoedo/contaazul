@@ -14,10 +14,10 @@ public interface BankslipService {
 	
 	BankslipResponseList listBankslips();
 	
-	BankslipDetailResponse detailsBankslip(String bankslipId);
+	BankslipDetailResponse detailsBankslip(String bankslipId) throws NotFoundException;
 	
-	BankslipResponse payBankslip(String bankslipId, BankslipPaymentRequest bankslipPaymentRequest) throws NotFoundException;
+	void payBankslip(String bankslipId, BankslipPaymentRequest bankslipPaymentRequest) throws NotFoundException;
 	
-	BankslipResponse cancelBankslip(String bankslipId) throws NotFoundException;
+	void cancelBankslip(String bankslipId) throws NotFoundException;
 	
 }

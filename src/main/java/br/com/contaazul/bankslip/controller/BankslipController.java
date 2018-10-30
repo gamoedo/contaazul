@@ -42,23 +42,24 @@ public class BankslipController {
 
 	@GetMapping(value = "/rest/bankslips/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	@ResponseStatus(code = HttpStatus.OK)
-	public BankslipDetailResponse detailsBankslip(@RequestBody @PathVariable(name = "id") String bankslipId) {
+	public BankslipDetailResponse detailsBankslip(@RequestBody @PathVariable(name = "id") String bankslipId)
+			throws NotFoundException {
 		return bankslipService.detailsBankslip(bankslipId);
 	}
 
 	@PostMapping(value = "/rest/bankslips/{id}/payments", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	@ResponseStatus(code = HttpStatus.CREATED)
-	public BankslipResponse payBankslip(@RequestBody @Valid BankslipPaymentRequest bankslipPaymentRequest,
-										@PathVariable(name = "id") String bankslipId) 
-												throws NotFoundException {
-		return bankslipService.payBankslip(bankslipId, bankslipPaymentRequest);
+	public void payBankslip(@RequestBody @Valid BankslipPaymentRequest bankslipPaymentRequest,
+			@PathVariable(name = "id") String bankslipId)
+					throws NotFoundException {
+		bankslipService.payBankslip(bankslipId, bankslipPaymentRequest);
 	}
 
 	@DeleteMapping(value = "/rest/bankslips/{id}")
 	@ResponseStatus(code = HttpStatus.NO_CONTENT)
-	public BankslipResponse cancelBankslip(@RequestBody @PathVariable(name = "id") String bankslipId)
+	public void cancelBankslip(@RequestBody @PathVariable(name = "id") String bankslipId)
 			throws NotFoundException {
-		return bankslipService.cancelBankslip(bankslipId);
+		bankslipService.cancelBankslip(bankslipId);
 	}
 
 }
