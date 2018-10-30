@@ -48,7 +48,7 @@ public class BankslipController {
 	}
 
 	@PostMapping(value = "/rest/bankslips/{id}/payments", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	@ResponseStatus(code = HttpStatus.CREATED)
+	@ResponseStatus(code = HttpStatus.NO_CONTENT)
 	public void payBankslip(@RequestBody @Valid BankslipPaymentRequest bankslipPaymentRequest,
 			@PathVariable(name = "id") String bankslipId)
 					throws NotFoundException {

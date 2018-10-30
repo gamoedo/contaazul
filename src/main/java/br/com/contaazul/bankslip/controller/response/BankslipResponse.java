@@ -26,12 +26,12 @@ public class BankslipResponse {
 	
 	private EnumStatus status;
 	
-	public BankslipResponse(Bankslip bansklip) {
-		this.id = bansklip.getId();
-		this.dueDate = bansklip.getDueDate();		
-		this.totalInCents = bansklip.getTotalInCents();		
-		this.customer = bansklip.getCustomer() ;		
-		this.status = bansklip.getStatus();
+	public BankslipResponse(Bankslip bankslip) {
+		this.id = bankslip.getId();
+		this.dueDate = bankslip.getDueDate();		
+		this.totalInCents = bankslip.getTotalInCents();		
+		this.customer = bankslip.getCustomer() ;		
+		this.status = bankslip.getStatus();
 	}
 
 }

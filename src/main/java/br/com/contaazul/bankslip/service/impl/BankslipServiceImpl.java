@@ -24,8 +24,8 @@ import javassist.NotFoundException;
 @Service
 public class BankslipServiceImpl implements BankslipService {
 
-	private final BigDecimal FINE_LESS_TEN_DAYS = BigDecimal.valueOf(0, 005);
-	private final BigDecimal FINE_MORE_TEN_DAYS = BigDecimal.valueOf(0, 01);
+	private final BigDecimal FINE_LESS_TEN_DAYS = BigDecimal.valueOf(0.005);
+	private final BigDecimal FINE_MORE_TEN_DAYS = BigDecimal.valueOf(0.01);
 
 	@Autowired
 	BankslipRepository bankslipRepository;
@@ -63,19 +63,23 @@ public class BankslipServiceImpl implements BankslipService {
 
 		BankslipDetailResponse bankslipDetailResponse = new BankslipDetailResponse(bankslip);
 
-		Long daysOfLate = Duration
-				.between(bankslip.getPaymentDate().atStartOfDay(), bankslip.getDueDate().atStartOfDay()).toDays();
+		if (bankslip.getStatus() == EnumStatus.PAID) {
+			
+			Long daysOfLate = Duration
+					.between(bankslip.getDueDate().atStartOfDay(), bankslip.getPaymentDate().atStartOfDay()).toDays();
 
-		if (daysOfLate > 1 && daysOfLate <= 10) {
+			if (daysOfLate > 1 && daysOfLate <= 10) {
 
-			BigDecimal fine = (bankslip.getTotalInCents().multiply(FINE_LESS_TEN_DAYS))
-					.multiply(new BigDecimal(daysOfLate)).setScale(0, BigDecimal.ROUND_DOWN);
-			bankslipDetailResponse.setFine(fine);
+				BigDecimal fine = (bankslip.getTotalInCents().multiply(FINE_LESS_TEN_DAYS))
+						.multiply(new BigDecimal(daysOfLate)).setScale(0, BigDecimal.ROUND_DOWN);
+				bankslipDetailResponse.setFine(fine);
 
-		} else if (daysOfLate > 10) {
-			BigDecimal fine = (bankslip.getTotalInCents().multiply(FINE_MORE_TEN_DAYS))
-					.multiply(new BigDecimal(daysOfLate)).setScale(0, BigDecimal.ROUND_DOWN);
-			bankslipDetailResponse.setFine(fine);
+			} else if (daysOfLate > 10) {
+				BigDecimal fine = (bankslip.getTotalInCents().multiply(FINE_MORE_TEN_DAYS))
+						.multiply(new BigDecimal(daysOfLate)).setScale(0, BigDecimal.ROUND_DOWN);
+				bankslipDetailResponse.setFine(fine);
+			}
+			
 		}
 
 		return bankslipDetailResponse;
@@ -110,7 +114,7 @@ public class BankslipServiceImpl implements BankslipService {
 
 	protected Bankslip getBankslipFromId(String bankslipId) throws NotFoundException {
 
-		Bankslip bankslip = bankslipRepository.getOne(bankslipId);
+		Bankslip bankslip = bankslipRepository.findById(bankslipId).orElse(null);
 
 		if (bankslip == null) {
 			throw new NotFoundException("");

@@ -21,7 +21,8 @@ public class BankslipDetailResponse extends BankslipResponse {
 	
 	private BigDecimal fine;
 		
-	public BankslipDetailResponse(Bankslip bankslip) {	
+	public BankslipDetailResponse(Bankslip bankslip) {
+		super(bankslip);
 		this.paymentDate = bankslip.getPaymentDate();
 		this.fine = BigDecimal.ZERO;
 	}
