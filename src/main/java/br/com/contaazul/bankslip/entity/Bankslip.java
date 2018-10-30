@@ -10,6 +10,7 @@ import javax.persistence.Id;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 import org.hibernate.id.UUIDGenerator;
+import org.springframework.data.annotation.Transient;
 
 import lombok.Data;
 
@@ -36,5 +37,8 @@ public class Bankslip {
 	private EnumStatus status;
 	
 	private LocalDate paymentDate;
+	
+	@Transient
+	private BigDecimal fine = BigDecimal.ZERO;
 			
 }

@@ -8,6 +8,6 @@ import lombok.Getter;
 public class BankslipPaymentRequest {
 
 	@NotNull
-	private String paymentDate;
+	private String payment_date;
 
 }

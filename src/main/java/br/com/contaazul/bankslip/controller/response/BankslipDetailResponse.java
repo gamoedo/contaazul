@@ -1,12 +1,6 @@
 package br.com.contaazul.bankslip.controller.response;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
-import org.springframework.format.annotation.DateTimeFormat;
-
 import br.com.contaazul.bankslip.entity.Bankslip;
-import br.com.contaazul.bankslip.util.Utils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,16 +9,15 @@ import lombok.Setter;
 @Getter
 @Setter
 public class BankslipDetailResponse extends BankslipResponse {
+		
+	private String payment_date;
 	
-	@DateTimeFormat(pattern=Utils.patternDate)
-	private LocalDate paymentDate;
-	
-	private BigDecimal fine;
+	private String fine;
 		
 	public BankslipDetailResponse(Bankslip bankslip) {
 		super(bankslip);
-		this.paymentDate = bankslip.getPaymentDate();
-		this.fine = BigDecimal.ZERO;
+		this.payment_date = bankslip.getPaymentDate().toString();
+		this.fine = bankslip.getFine().toString();
 	}
 
 }

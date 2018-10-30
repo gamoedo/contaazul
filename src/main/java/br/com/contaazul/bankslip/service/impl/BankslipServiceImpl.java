@@ -12,9 +12,6 @@ import org.springframework.stereotype.Service;
 
 import br.com.contaazul.bankslip.controller.request.BankslipPaymentRequest;
 import br.com.contaazul.bankslip.controller.request.BankslipRequest;
-import br.com.contaazul.bankslip.controller.response.BankslipDetailResponse;
-import br.com.contaazul.bankslip.controller.response.BankslipResponse;
-import br.com.contaazul.bankslip.controller.response.BankslipResponseList;
 import br.com.contaazul.bankslip.entity.Bankslip;
 import br.com.contaazul.bankslip.entity.EnumStatus;
 import br.com.contaazul.bankslip.exception.UnprocessableEntityException;
@@ -35,12 +32,11 @@ public class BankslipServiceImpl implements BankslipService {
 	BankslipRepository bankslipRepository;
 
 	@Override
-	public BankslipResponse createBankslip(BankslipRequest bankslipRequest) throws UnprocessableEntityException {
+	public Bankslip createBankslip(BankslipRequest bankslipRequest) throws UnprocessableEntityException {
 
 		Bankslip bankslip = new Bankslip();
 
 		try {
-			logger.info("createBankslip: Converting bankslipRequest to entity bankslip");
 			bankslip = bankslipRequest.toModel();
 		} catch (Exception e) {
 			logger.info("createBankslip: Conversion failed.");
@@ -51,32 +47,29 @@ public class BankslipServiceImpl implements BankslipService {
 		logger.info("createBankslip: Saving bankslip in the repository");
 		bankslipRepository.save(bankslip);
 
-		logger.info("createBankslip: Returning bankslipResponse with ID '"+ bankslip.getId() +"' already saved");
-		return new BankslipResponse(bankslip);
+		logger.info("createBankslip: Returning bankslip with ID '"+ bankslip.getId() +"' already saved");
+		return bankslip;
 	
 	}
 
 	@Override
-	public BankslipResponseList listBankslips() {
+	public List<Bankslip> listBankslips() {
 		
 		logger.info("listBankslips: Finding all the bankslips in the repository");
 		List<Bankslip> listBankslips = bankslipRepository.findAll();
 		logger.info("listBankslips: Returning a list of bankslips. Size: " + listBankslips.size());
-		return new BankslipResponseList(listBankslips);
+		return listBankslips;
 	
 	}
 
 	@Override
-	public BankslipDetailResponse detailsBankslip(String bankslipId) throws NotFoundException {
+	public Bankslip detailsBankslip(String bankslipId) throws NotFoundException {
 
 		Bankslip bankslip = getBankslipFromId(bankslipId);
 
-		logger.info("detailsBankslip: Converting entity bankslip to bankslipDetailResponse");
-		BankslipDetailResponse bankslipDetailResponse = new BankslipDetailResponse(bankslip);
-
 		if (bankslip.getStatus() == EnumStatus.PAID) {
 			
-			logger.info("detailsBankslip: Converting entity bankslip to bankslipDetailResponse");
+			logger.info("detailsBankslip: Calculating the days of late ");
 			
 			Long daysOfLate = Duration
 					.between(bankslip.getDueDate().atStartOfDay(), bankslip.getPaymentDate().atStartOfDay()).toDays();
@@ -89,7 +82,7 @@ public class BankslipServiceImpl implements BankslipService {
 				
 				BigDecimal fine = (bankslip.getTotalInCents().multiply(FINE_LESS_TEN_DAYS))
 						.multiply(new BigDecimal(daysOfLate)).setScale(0, BigDecimal.ROUND_DOWN);
-				bankslipDetailResponse.setFine(fine);
+				bankslip.setFine(fine);
 
 			} else if (daysOfLate > 10) {
 				
@@ -97,13 +90,13 @@ public class BankslipServiceImpl implements BankslipService {
 				
 				BigDecimal fine = (bankslip.getTotalInCents().multiply(FINE_MORE_TEN_DAYS))
 						.multiply(new BigDecimal(daysOfLate)).setScale(0, BigDecimal.ROUND_DOWN);
-				bankslipDetailResponse.setFine(fine);
+				bankslip.setFine(fine);
 			}
 			
 		}
 
-		logger.info("detailsBankslip: Returning the bankslip detail with ID: '" + bankslipDetailResponse.getId() +"'");
-		return bankslipDetailResponse;
+		logger.info("detailsBankslip: Returning the bankslip detail with ID: '" + bankslip.getId() +"'");
+		return bankslip;
 	
 	}
 
@@ -114,7 +107,7 @@ public class BankslipServiceImpl implements BankslipService {
 		Bankslip bankslip = getBankslipFromId(bankslipId);
 
 		logger.info("payBankslip: Converting the bankslipPaymentRequest and getting the paymentDate");
-		LocalDate paymentDate = Utils.convertStringToLocalDate(bankslipPaymentRequest.getPaymentDate(),
+		LocalDate paymentDate = Utils.convertStringToLocalDate(bankslipPaymentRequest.getPayment_date(),
 				Utils.patternDate);
 
 		bankslip.setStatus(EnumStatus.PAID);

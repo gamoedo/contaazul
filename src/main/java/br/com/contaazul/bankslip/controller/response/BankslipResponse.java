@@ -1,13 +1,6 @@
 package br.com.contaazul.bankslip.controller.response;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-
-import org.springframework.format.annotation.DateTimeFormat;
-
 import br.com.contaazul.bankslip.entity.Bankslip;
-import br.com.contaazul.bankslip.entity.EnumStatus;
-import br.com.contaazul.bankslip.util.Utils;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -16,22 +9,21 @@ import lombok.NoArgsConstructor;
 public class BankslipResponse {
 	
 	private String id;
+		
+	private String due_date;
 	
-	@DateTimeFormat(pattern=Utils.patternDate)
-	private LocalDate dueDate;
-	
-	private BigDecimal totalInCents;
+	private String total_in_cents;
 	
 	private String customer;
 	
-	private EnumStatus status;
+	private String status;
 	
 	public BankslipResponse(Bankslip bankslip) {
 		this.id = bankslip.getId();
-		this.dueDate = bankslip.getDueDate();		
-		this.totalInCents = bankslip.getTotalInCents();		
-		this.customer = bankslip.getCustomer() ;		
-		this.status = bankslip.getStatus();
+		this.due_date = bankslip.getDueDate().toString();		
+		this.total_in_cents = bankslip.getTotalInCents().toString();		
+		this.customer = bankslip.getCustomer();		
+		this.status = bankslip.getStatus().name();
 	}
 
 }

@@ -1,5 +1,7 @@
 package br.com.contaazul.bankslip.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -20,6 +22,7 @@ import br.com.contaazul.bankslip.controller.request.BankslipRequest;
 import br.com.contaazul.bankslip.controller.response.BankslipDetailResponse;
 import br.com.contaazul.bankslip.controller.response.BankslipResponse;
 import br.com.contaazul.bankslip.controller.response.BankslipResponseList;
+import br.com.contaazul.bankslip.entity.Bankslip;
 import br.com.contaazul.bankslip.exception.UnprocessableEntityException;
 import br.com.contaazul.bankslip.service.BankslipService;
 import javassist.NotFoundException;
@@ -36,14 +39,17 @@ public class BankslipController {
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public BankslipResponse createBankslip(@RequestBody @Valid BankslipRequest bankslipRequest)
 			throws UnprocessableEntityException {
-		logger.info("createBankslip: Receiving bankslipRequest");
-		return bankslipService.createBankslip(bankslipRequest);
+		logger.info("createBankslip: Receiving bankslipRequest");		
+		Bankslip bankslip = bankslipService.createBankslip(bankslipRequest);
+		logger.info("createBankslip: Converting bankslipRequest to entity bankslip");
+		return new BankslipResponse(bankslip);
 	}
 
 	@GetMapping(value = "/rest/bankslips/", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
 	public BankslipResponseList listBankslips() {
 		logger.info("listBankslips: Producing listBankslips");
-		return bankslipService.listBankslips();
+		List<Bankslip> listBankslips = bankslipService.listBankslips();
+		return new BankslipResponseList(listBankslips);
 	}
 
 	@GetMapping(value = "/rest/bankslips/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
@@ -51,7 +57,9 @@ public class BankslipController {
 	public BankslipDetailResponse detailsBankslip(@RequestBody @PathVariable(name = "id") String bankslipId)
 			throws NotFoundException {
 		logger.info("detailsBankslip: Receiving bankslipId");
-		return bankslipService.detailsBankslip(bankslipId);
+		Bankslip bankslip = bankslipService.detailsBankslip(bankslipId);				
+		logger.info("detailsBankslip: Converting entity bankslip to bankslipDetailResponse");
+		return new BankslipDetailResponse(bankslip);
 	}
 
 	@PostMapping(value = "/rest/bankslips/{id}/payments", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)

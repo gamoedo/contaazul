@@ -1,4 +1,4 @@
-package br.com.contaazul.boleto;
+package br.com.contaazul.bankslip;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
