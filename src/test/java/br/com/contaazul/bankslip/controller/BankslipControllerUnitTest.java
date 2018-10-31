@@ -1,10 +1,11 @@
 package br.com.contaazul.bankslip.controller;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -28,7 +29,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import br.com.contaazul.bankslip.controller.request.BankslipPaymentRequest;
+import br.com.contaazul.bankslip.controller.response.BankslipDetailResponse;
 import br.com.contaazul.bankslip.entity.Bankslip;
 import br.com.contaazul.bankslip.entity.EnumStatus;
 import br.com.contaazul.bankslip.exception.UnprocessableEntityException;
@@ -214,18 +215,44 @@ public class BankslipControllerUnitTest {
     }
     
     @Test
-    public void shouldThrowNotFoundWithIncorrectPaymentDate() throws Exception {
+    public void shouldThrowUnprocessableEntityWithIncorrectPaymentDate() throws Exception {
 
 	String request = JsonHelper.getRequestFileAsString("bankslip/create_bankslip_payment_request_with_invalid_paymentdate.json");
-	String response = JsonHelper.loadResponse("bankslip/not_found.json");
+	String response = JsonHelper.loadResponse("bankslip/unprocessable_entity.json");
 
 	mvc.perform(post("/rest/bankslips/123456789-1a14-403b-ad73-d78ae19b59bf/payments")
 		.contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
 		.content(request))
-		.andExpect(status().isNotFound())
+		.andExpect(status().isUnprocessableEntity())
 		.andExpect(content().json(response));
-
-	verify(bankslipService, times(1)).payBankslip(eq("123456789-1a14-403b-ad73-d78ae19b59bf"), (any(Bankslip.class)));
     }
 
+    @Test
+    public void testSetBankslipDetailResponseWithParameters() throws Exception {
+	
+	bankslip.setPaymentDate(Utils.convertStringToLocalDate("2018-08-07", "yyyy-MM-dd"));
+	bankslip.setFine(BigDecimal.valueOf(8888));
+	
+	BankslipDetailResponse bankslipDetailResponse = new BankslipDetailResponse(bankslip);
+	
+	String expected = "2018-08-07"; 
+	assertEquals(expected, bankslipDetailResponse.getPaymentDate());
+    }
+    
+    @Test
+    public void testSetBankslipDetailResponseWithoutParameters() throws Exception {
+	
+	bankslip.setPaymentDate(Utils.convertStringToLocalDate("2018-08-07", "yyyy-MM-dd"));
+	bankslip.setFine(BigDecimal.valueOf(8888));
+	
+	BankslipDetailResponse bankslipDetailResponse = new BankslipDetailResponse();
+	
+	bankslipDetailResponse.setPaymentDate("2018-08-07");
+	bankslipDetailResponse.setFine("8888");
+	
+	String expected = "2018-08-07"; 
+	assertEquals(expected, bankslipDetailResponse.getPaymentDate());
+    }
+
+    
 }

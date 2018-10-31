@@ -4,9 +4,9 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class BoletoApplication {
+public class BankslipApplication {
 
 	public static void main(String[] args) {					
-		SpringApplication.run(BoletoApplication.class, args);
+		SpringApplication.run(BankslipApplication.class, args);
 	}
 }

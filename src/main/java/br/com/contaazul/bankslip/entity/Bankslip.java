@@ -13,9 +13,11 @@ import org.hibernate.id.UUIDGenerator;
 import org.springframework.data.annotation.Transient;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Data
 @Entity
+@EqualsAndHashCode
 public class Bankslip {
 
 	@Id 

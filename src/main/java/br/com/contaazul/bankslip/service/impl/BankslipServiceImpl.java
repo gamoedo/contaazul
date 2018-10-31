@@ -2,7 +2,6 @@ package br.com.contaazul.bankslip.service.impl;
 
 import java.math.BigDecimal;
 import java.time.Duration;
-import java.time.LocalDate;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -10,14 +9,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import br.com.contaazul.bankslip.controller.request.BankslipPaymentRequest;
-import br.com.contaazul.bankslip.controller.request.BankslipRequest;
 import br.com.contaazul.bankslip.entity.Bankslip;
 import br.com.contaazul.bankslip.entity.EnumStatus;
-import br.com.contaazul.bankslip.exception.UnprocessableEntityException;
 import br.com.contaazul.bankslip.repository.BankslipRepository;
 import br.com.contaazul.bankslip.service.BankslipService;
-import br.com.contaazul.bankslip.util.Utils;
 import javassist.NotFoundException;
 
 @Service
@@ -120,7 +115,7 @@ public class BankslipServiceImpl implements BankslipService {
 
 	logger.info("getBankslipFromId: Finding bankslipID '" + bankslipId + "' in the repository");
 
-	Bankslip bankslip = bankslipRepository.findById(bankslipId).orElse(null);
+	Bankslip bankslip = bankslipRepository.getOne(bankslipId);
 
 	if (bankslip == null) {
 	    throw new NotFoundException("");

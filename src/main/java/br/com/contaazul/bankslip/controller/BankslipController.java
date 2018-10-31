@@ -81,10 +81,10 @@ public class BankslipController {
 
 	Bankslip bankslip;
 
-	try {
-	    logger.info("createBankslip: Converting bankslipPaymentRequest to entity bankslip");
-	    bankslip = bankslipPaymentRequest.toModel();
-	} catch (Exception e) {
+	logger.info("createBankslip: Converting bankslipPaymentRequest to entity bankslip");
+	bankslip = bankslipPaymentRequest.toModel();
+
+	if (bankslip.getPaymentDate() == null) {
 	    logger.info("createBankslip: Conversion failed.");
 	    throw new UnprocessableEntityException();
 	}

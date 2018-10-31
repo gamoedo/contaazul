@@ -8,7 +8,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import br.com.contaazul.bankslip.BoletoApplication;
+import br.com.contaazul.bankslip.BankslipApplication;
 import springfox.bean.validators.configuration.BeanValidatorPluginsConfiguration;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -27,7 +27,7 @@ public class SwaggerConfig implements WebMvcConfigurer {
     public Docket apiDocket() {                
         return new Docket(DocumentationType.SWAGGER_2)          
           .select()
-          .apis(RequestHandlerSelectors.basePackage(BoletoApplication.class.getPackage().getName()))
+          .apis(RequestHandlerSelectors.basePackage(BankslipApplication.class.getPackage().getName()))
           .paths(PathSelectors.any())
           .build()
           .useDefaultResponseMessages(false)
