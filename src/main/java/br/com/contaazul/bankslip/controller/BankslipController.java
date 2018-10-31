@@ -30,53 +30,75 @@ import javassist.NotFoundException;
 @RestController
 public class BankslipController {
 
-	Logger logger = LoggerFactory.getLogger(this.getClass());
-	
-	@Autowired
-	BankslipService bankslipService;
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	@PostMapping(value = "/rest/bankslips/", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	@ResponseStatus(code = HttpStatus.CREATED)
-	public BankslipResponse createBankslip(@RequestBody @Valid BankslipRequest bankslipRequest)
-			throws UnprocessableEntityException {
-		logger.info("createBankslip: Receiving bankslipRequest");		
-		Bankslip bankslip = bankslipService.createBankslip(bankslipRequest);
-		logger.info("createBankslip: Converting bankslipRequest to entity bankslip");
-		return new BankslipResponse(bankslip);
+    @Autowired
+    BankslipService bankslipService;
+
+    @PostMapping(value = "/rest/bankslips/", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE, produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseStatus(code = HttpStatus.CREATED)
+    public BankslipResponse createBankslip(@RequestBody @Valid BankslipRequest bankslipRequest) throws UnprocessableEntityException {
+	logger.info("createBankslip: Receiving bankslipRequest");
+
+	Bankslip bankslip;
+
+	try {
+	    logger.info("createBankslip: Converting bankslipRequest to entity bankslip");
+	    bankslip = bankslipRequest.toModel();
+	} catch (Exception e) {
+	    logger.info("createBankslip: Conversion failed.");
+	    throw new UnprocessableEntityException();
 	}
 
-	@GetMapping(value = "/rest/bankslips/", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	public BankslipResponseList listBankslips() {
-		logger.info("listBankslips: Producing listBankslips");
-		List<Bankslip> listBankslips = bankslipService.listBankslips();
-		return new BankslipResponseList(listBankslips);
+	bankslip = bankslipService.createBankslip(bankslip);
+	logger.info("createBankslip: Converting bankslipResponse to entity bankslip");
+	return new BankslipResponse(bankslip);
+    }
+
+    @GetMapping(value = "/rest/bankslips/", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public BankslipResponseList listBankslips() {
+	logger.info("listBankslips: Producing listBankslips");
+	List<Bankslip> listBankslips = bankslipService.listBankslips();
+	return new BankslipResponseList(listBankslips);
+    }
+
+    @GetMapping(value = "/rest/bankslips/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseStatus(code = HttpStatus.OK)
+    public BankslipDetailResponse detailsBankslip(@RequestBody @PathVariable(name = "id") String bankslipId) throws NotFoundException {
+
+	logger.info("detailsBankslip: Receiving bankslipId");
+	Bankslip bankslip = bankslipService.detailsBankslip(bankslipId);
+	logger.info("detailsBankslip: Converting entity bankslip to bankslipDetailResponse");
+	return new BankslipDetailResponse(bankslip);
+
+    }
+
+    @PostMapping(value = "/rest/bankslips/{id}/payments", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void payBankslip(@RequestBody @Valid BankslipPaymentRequest bankslipPaymentRequest, @PathVariable(name = "id") String bankslipId) throws NotFoundException {
+
+	logger.info("payBankslip: Receiving bankslipPaymentRequest and bankslipId");
+
+	Bankslip bankslip;
+
+	try {
+	    logger.info("createBankslip: Converting bankslipPaymentRequest to entity bankslip");
+	    bankslip = bankslipPaymentRequest.toModel();
+	} catch (Exception e) {
+	    logger.info("createBankslip: Conversion failed.");
+	    throw new UnprocessableEntityException();
 	}
 
-	@GetMapping(value = "/rest/bankslips/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	@ResponseStatus(code = HttpStatus.OK)
-	public BankslipDetailResponse detailsBankslip(@RequestBody @PathVariable(name = "id") String bankslipId)
-			throws NotFoundException {
-		logger.info("detailsBankslip: Receiving bankslipId");
-		Bankslip bankslip = bankslipService.detailsBankslip(bankslipId);				
-		logger.info("detailsBankslip: Converting entity bankslip to bankslipDetailResponse");
-		return new BankslipDetailResponse(bankslip);
-	}
+	bankslipService.payBankslip(bankslipId, bankslip);
+    }
 
-	@PostMapping(value = "/rest/bankslips/{id}/payments", consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
-	@ResponseStatus(code = HttpStatus.NO_CONTENT)
-	public void payBankslip(@RequestBody @Valid BankslipPaymentRequest bankslipPaymentRequest,
-			@PathVariable(name = "id") String bankslipId)
-					throws NotFoundException {
-		logger.info("payBankslip: Receiving bankslipPaymentRequest and bankslipId");
-		bankslipService.payBankslip(bankslipId, bankslipPaymentRequest);
-	}
+    @DeleteMapping(value = "/rest/bankslips/{id}")
+    @ResponseStatus(code = HttpStatus.NO_CONTENT)
+    public void cancelBankslip(@RequestBody @PathVariable(name = "id") String bankslipId) throws NotFoundException {
 
-	@DeleteMapping(value = "/rest/bankslips/{id}")
-	@ResponseStatus(code = HttpStatus.NO_CONTENT)
-	public void cancelBankslip(@RequestBody @PathVariable(name = "id") String bankslipId)
-			throws NotFoundException {
-		logger.info("cancelBankslip: Receiving bankslipId");
-		bankslipService.cancelBankslip(bankslipId);
-	}
+	logger.info("cancelBankslip: Receiving bankslipId");
+	bankslipService.cancelBankslip(bankslipId);
+    
+    }
 
 }

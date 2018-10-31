@@ -17,41 +17,39 @@ import lombok.Getter;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-	Logger logger = LoggerFactory.getLogger(this.getClass());
-	
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	@ExceptionHandler({HttpMessageNotReadableException.class, MethodArgumentNotValidException.class, 
-		MissingServletRequestParameterException.class, TypeMismatchException.class} )
-	public ErrorMessage handleBadRequest(Exception e) {
-		logger.error("handleBadRequest: StatusCode: 400");
-		return new ErrorMessage("400", "Bankslip not provided in the request body");
-	}
-	
-	@ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-	@ExceptionHandler(UnprocessableEntityException.class)
-	public ErrorMessage handleUnprocessableEntity(UnprocessableEntityException e) {
-		logger.error("handleUnprocessableEntity: StatusCode: 422");
-		return new ErrorMessage("422",
-				"Invalid bankslip provided. The possible reasons are: A field of the provided bankslip was null or with invalid values");
+    Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler({ HttpMessageNotReadableException.class, MethodArgumentNotValidException.class, MissingServletRequestParameterException.class, TypeMismatchException.class })
+    public ErrorMessage handleBadRequest(Exception e) {
+	logger.error("handleBadRequest: StatusCode: 400");
+	return new ErrorMessage("400", "Bankslip not provided in the request body");
+    }
+
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
+    @ExceptionHandler(UnprocessableEntityException.class)
+    public ErrorMessage handleUnprocessableEntity(UnprocessableEntityException e) {
+	logger.error("handleUnprocessableEntity: StatusCode: 422");
+	return new ErrorMessage("422", "Invalid bankslip provided. The possible reasons are: A field of the provided bankslip was null or with invalid values");
+    }
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NotFoundException.class)
+    public ErrorMessage handleNotFound(NotFoundException e) {
+	logger.error("handleNotFound: StatusCode: 404");
+	return new ErrorMessage("404", "Bankslip not found with the specified id");
+    }
+
+    @Getter
+    class ErrorMessage {
+	String error;
+	String message;
+
+	ErrorMessage(String error, String message) {
+	    this.error = error;
+	    this.message = message;
 	}
 
-	@ResponseStatus(HttpStatus.NOT_FOUND)
-	@ExceptionHandler(NotFoundException.class)
-	public ErrorMessage handleNotFound(NotFoundException e) {
-		logger.error("handleNotFound: StatusCode: 404");
-		return new ErrorMessage("404", "Bankslip not found with the specified id");
-	}
-
-	@Getter
-	class ErrorMessage {
-		String error;
-		String message;
-
-		ErrorMessage(String error, String message) {
-			this.error = error;
-			this.message = message;
-		}
-
-	}
+    }
 
 }

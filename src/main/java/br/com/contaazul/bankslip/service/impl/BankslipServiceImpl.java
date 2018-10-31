@@ -22,126 +22,113 @@ import javassist.NotFoundException;
 
 @Service
 public class BankslipServiceImpl implements BankslipService {
-	
-	Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	private final BigDecimal FINE_LESS_TEN_DAYS = BigDecimal.valueOf(0.005);
-	private final BigDecimal FINE_MORE_TEN_DAYS = BigDecimal.valueOf(0.01);
+    Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	@Autowired
-	BankslipRepository bankslipRepository;
+    private final BigDecimal FINE_LESS_TEN_DAYS = BigDecimal.valueOf(0.005);
+    private final BigDecimal FINE_MORE_TEN_DAYS = BigDecimal.valueOf(0.01);
 
-	@Override
-	public Bankslip createBankslip(BankslipRequest bankslipRequest) throws UnprocessableEntityException {
+    @Autowired
+    BankslipRepository bankslipRepository;
 
-		Bankslip bankslip = new Bankslip();
+    @Override
+    public Bankslip createBankslip(Bankslip bankslip) {
 
-		try {
-			bankslip = bankslipRequest.toModel();
-		} catch (Exception e) {
-			logger.info("createBankslip: Conversion failed.");
-			throw new UnprocessableEntityException();
-		}
+	bankslip.setStatus(EnumStatus.PENDING);
 
-		bankslip.setStatus(EnumStatus.PENDING);
-		logger.info("createBankslip: Saving bankslip in the repository");
-		bankslipRepository.save(bankslip);
+	logger.info("createBankslip: Saving bankslip in the repository");
+	bankslipRepository.save(bankslip);
 
-		logger.info("createBankslip: Returning bankslip with ID '"+ bankslip.getId() +"' already saved");
-		return bankslip;
-	
-	}
+	logger.info("createBankslip: Returning bankslip with ID '" + bankslip.getId() + "' already saved");
+	return bankslip;
 
-	@Override
-	public List<Bankslip> listBankslips() {
-		
-		logger.info("listBankslips: Finding all the bankslips in the repository");
-		List<Bankslip> listBankslips = bankslipRepository.findAll();
-		logger.info("listBankslips: Returning a list of bankslips. Size: " + listBankslips.size());
-		return listBankslips;
-	
-	}
+    }
 
-	@Override
-	public Bankslip detailsBankslip(String bankslipId) throws NotFoundException {
+    @Override
+    public List<Bankslip> listBankslips() {
 
-		Bankslip bankslip = getBankslipFromId(bankslipId);
+	logger.info("listBankslips: Finding all the bankslips in the repository");
+	List<Bankslip> listBankslips = bankslipRepository.findAll();
+	logger.info("listBankslips: Returning a list of bankslips. Size: " + listBankslips.size());
 
-		if (bankslip.getStatus() == EnumStatus.PAID) {
-			
-			logger.info("detailsBankslip: Calculating the days of late ");
-			
-			Long daysOfLate = Duration
-					.between(bankslip.getDueDate().atStartOfDay(), bankslip.getPaymentDate().atStartOfDay()).toDays();
+	return listBankslips;
 
-			logger.info("detailsBankslip: Days Of Late to bankslip payment: " + daysOfLate);
-			
-			if (daysOfLate > 1 && daysOfLate <= 10) {
+    }
 
-				logger.info("detailsBankslip: Calculating the amount fine at 0,5%: ");
-				
-				BigDecimal fine = (bankslip.getTotalInCents().multiply(FINE_LESS_TEN_DAYS))
-						.multiply(new BigDecimal(daysOfLate)).setScale(0, BigDecimal.ROUND_DOWN);
-				bankslip.setFine(fine);
+    @Override
+    public Bankslip detailsBankslip(String bankslipId) throws NotFoundException {
 
-			} else if (daysOfLate > 10) {
-				
-				logger.info("detailsBankslip: Calculating the amount fine at 1,0%: ");
-				
-				BigDecimal fine = (bankslip.getTotalInCents().multiply(FINE_MORE_TEN_DAYS))
-						.multiply(new BigDecimal(daysOfLate)).setScale(0, BigDecimal.ROUND_DOWN);
-				bankslip.setFine(fine);
-			}
-			
-		}
+	Bankslip bankslip = getBankslipFromId(bankslipId);
 
-		logger.info("detailsBankslip: Returning the bankslip detail with ID: '" + bankslip.getId() +"'");
-		return bankslip;
-	
-	}
+	if (bankslip.getStatus() == EnumStatus.PAID) {
 
-	@Override
-	public void payBankslip(String bankslipId, BankslipPaymentRequest bankslipPaymentRequest)
-			throws NotFoundException {
-		
-		Bankslip bankslip = getBankslipFromId(bankslipId);
+	    logger.info("detailsBankslip: Calculating the days of late ");
 
-		logger.info("payBankslip: Converting the bankslipPaymentRequest and getting the paymentDate");
-		LocalDate paymentDate = Utils.convertStringToLocalDate(bankslipPaymentRequest.getPayment_date(),
-				Utils.patternDate);
+	    Long daysOfLate = Duration.between(bankslip.getDueDate().atStartOfDay(), bankslip.getPaymentDate().atStartOfDay()).toDays();
 
-		bankslip.setStatus(EnumStatus.PAID);
-		bankslip.setPaymentDate(paymentDate);
-		
-		logger.info("payBankslip: Saving bankslip with paymentDate and status PAID in the repository");
-		bankslipRepository.save(bankslip);
-	
-	}
+	    logger.info("detailsBankslip: Days Of Late to bankslip payment: " + daysOfLate);
 
-	@Override
-	public void cancelBankslip(String bankslipId) throws NotFoundException {
+	    if (daysOfLate > 1 && daysOfLate <= 10) {
 
-		Bankslip bankslip = getBankslipFromId(bankslipId);
-		bankslip.setStatus(EnumStatus.CANCELED);
-		
-		logger.info("payBankslip: Saving bankslip with status CANCELED in the repository");
-		bankslipRepository.save(bankslip);
+		logger.info("detailsBankslip: Calculating the amount fine at 0,5%: ");
+
+		BigDecimal fine = (bankslip.getTotalInCents().multiply(FINE_LESS_TEN_DAYS)).multiply(new BigDecimal(daysOfLate)).setScale(0, BigDecimal.ROUND_DOWN);
+		bankslip.setFine(fine);
+
+	    } else if (daysOfLate > 10) {
+
+		logger.info("detailsBankslip: Calculating the amount fine at 1,0%: ");
+
+		BigDecimal fine = (bankslip.getTotalInCents().multiply(FINE_MORE_TEN_DAYS)).multiply(new BigDecimal(daysOfLate)).setScale(0, BigDecimal.ROUND_DOWN);
+		bankslip.setFine(fine);
+	    }
 
 	}
 
-	protected Bankslip getBankslipFromId(String bankslipId) throws NotFoundException {
+	logger.info("detailsBankslip: Returning the bankslip detail with ID: '" + bankslip.getId() + "'");
+	return bankslip;
 
-		logger.info("getBankslipFromId: Finding bankslipID '"+ bankslipId +"' in the repository");
-		
-		Bankslip bankslip = bankslipRepository.findById(bankslipId).orElse(null);
+    }
 
-		if (bankslip == null) {
-			throw new NotFoundException("");
-		}
+    @Override
+    public void payBankslip(String bankslipId, Bankslip bankslipRequest) throws NotFoundException {
 
-		logger.info("getBankslipFromId: Returning bankslipID '"+ bankslipId +"'");
-		return bankslip;
+	Bankslip bankslip = getBankslipFromId(bankslipId);
 
+	logger.info("payBankslip: Getting the paymentDate from bankslipRequest");
+
+	bankslip.setStatus(EnumStatus.PAID);
+	bankslip.setPaymentDate(bankslipRequest.getPaymentDate());
+
+	logger.info("payBankslip: Saving bankslip with paymentDate and status PAID in the repository");
+	bankslipRepository.save(bankslip);
+
+    }
+
+    @Override
+    public void cancelBankslip(String bankslipId) throws NotFoundException {
+
+	Bankslip bankslip = getBankslipFromId(bankslipId);
+	bankslip.setStatus(EnumStatus.CANCELED);
+
+	logger.info("payBankslip: Saving bankslip with status CANCELED in the repository");
+	bankslipRepository.save(bankslip);
+
+    }
+
+    protected Bankslip getBankslipFromId(String bankslipId) throws NotFoundException {
+
+	logger.info("getBankslipFromId: Finding bankslipID '" + bankslipId + "' in the repository");
+
+	Bankslip bankslip = bankslipRepository.findById(bankslipId).orElse(null);
+
+	if (bankslip == null) {
+	    throw new NotFoundException("");
 	}
+
+	logger.info("getBankslipFromId: Returning bankslipID '" + bankslipId + "'");
+	return bankslip;
+
+    }
 
 }

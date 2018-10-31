@@ -1,0 +1,4 @@
+{
+  "error": "422",
+  "message": "Invalid bankslip provided. The possible reasons are: A field of the provided bankslip was null or with invalid values"
+}
